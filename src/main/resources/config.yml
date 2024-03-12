@@ -1,0 +1,17 @@
+backup-folder: "backup"
+
+backup-start-notify: true
+backup-start-notify-message: "Creating backup!"
+
+backup-finish-notify: true
+backup-finish-notify-message: "Backup create!"
+
+backup-webhook: false
+backup-webhook-url: ""
+backup-notify-webhook-message: "Backup complete!"
+
+# count of backups to keep, -1 for unlimited
+max-amount-of-backups: 5
+
+# backup interval in hours, -1 for no interval
+backup-interval: 24
