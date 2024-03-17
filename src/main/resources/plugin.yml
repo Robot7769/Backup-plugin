@@ -1,6 +1,6 @@
 name: BackUp
 version: '${version}'
-main: robot7769.backup.BackUp
+main: robot7769.backup.BackupPlugin
 api-version: '1.20'
 author: Robot7769
 commands:
@@ -8,8 +8,3 @@ commands:
     description: Backup the server
     usage: /<command>
     permission: backup.backup
-
-  backup interval:
-    description: Set the backup interval
-    usage: /<command> <hours>
-    permission: backup.interval

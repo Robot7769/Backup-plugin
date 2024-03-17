@@ -1,4 +1,12 @@
+# folder for backup
 backup-folder: "backup"
+# path to worlds folder
+backup-worlds:
+  - "world"
+  - "world_nether"
+  - "world_the_end"
+#  - "plugin/BackUp/config.yml"
+#  - "whitelist.json"
 
 backup-start-notify: true
 backup-start-notify-message: "Creating backup!"

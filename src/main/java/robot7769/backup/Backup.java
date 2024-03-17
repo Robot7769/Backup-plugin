@@ -9,16 +9,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class Backup {
 
+    private final List<String> foldersToBackup;
+
     private final JavaPlugin plugin;
     public Backup(JavaPlugin plugin){
         this.plugin = plugin;
+        this.foldersToBackup = plugin.getConfig().getStringList("backup-worlds");
     }
     public void createBackup() {
         if (plugin.getConfig().getBoolean("backup-start-notify")) {
@@ -29,7 +34,9 @@ public class Backup {
         new BukkitRunnable() {
             @Override
             public void run() {
-                folderToZip(serverFile, Date.from(Instant.now()).toString().replace(":", "_") + ".zip");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+                Date date = Date.from(Instant.now());
+                folderToZip(serverFile, sdf.format(date) + ".zip");
             }
         }.runTaskAsynchronously(plugin);
     }
@@ -61,6 +68,10 @@ public class Backup {
             }
             if (plugin.getConfig().getBoolean("backup-webhook")) {
                 DiscordWebhook backUpFile = new DiscordWebhook(plugin.getConfig().getString("backup-webhook-url"));
+                backUpFile.addEmbed(new DiscordWebhook.EmbedObject()
+                        .setTitle("Záloha")
+                        .setDescription("Záloha byla úspěšně vytvořena. " + zipFile.getName()));
+                backUpFile.execute();
                 backUpFile.sendFile(zipFile.getPath());
             }
             return zipFile;
@@ -100,11 +111,17 @@ public class Backup {
         for (File file : folder.listFiles()) {
             if (file.isDirectory()) {
                 String path = parentPath + file.getName() + "/";
+                if (checkIfFileToBackup(path)) {
+                    continue;
+                }
                 ZipEntry zipEntry = new ZipEntry(path);
                 zos.putNextEntry(zipEntry);
                 addFolderToZip(path, file, zos);
                 zos.closeEntry();
             } else {
+                if (checkIfFileToBackup(parentPath + file.getName())) {
+                    continue;
+                }
                 try {
                     ZipEntry zipEntry = new ZipEntry(parentPath + file.getName());
                     zos.putNextEntry(zipEntry);
@@ -139,4 +156,14 @@ public class Backup {
         // delete the folder itself
         folder.delete();
     }
+
+    private boolean checkIfFileToBackup(String path) {
+        for (String folderName : foldersToBackup) {
+            if (path.contains(folderName)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
+

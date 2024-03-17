@@ -427,6 +427,9 @@ public class DiscordWebhook {
         InputStream responseStream;
         if (responseCode == 200) {
             responseStream = connection.getInputStream();
+        } else if (responseCode == 413) {
+            System.err.println("The file is too large.");
+            return;
         } else {
             responseStream = connection.getErrorStream();
         }

@@ -20,7 +20,7 @@ public final class BackupPlugin extends JavaPlugin {
                 }
             }, interval, interval);
         }
-
+        getCommand("backup").setExecutor(new BackupCommand(this));
     }
 
     @Override
